@@ -1,4 +1,4 @@
-import pygame
+import pygame, time
 from sys import exit
 from random import randint, choice
 
@@ -136,10 +136,17 @@ menu_message_rect = menu_message.get_rect(center = (400, 330))
 unfortunate_message = font.render(f"Unfortunate! Vireo's journey has ended.", False, 'black')
 unfortunate_message_rect = unfortunate_message.get_rect(center = (400, 70))
 
+# End-game
+success_message1 = font.render(f'Congratulations!', False, 'Green')
+success_message_rect1 = success_message1.get_rect(center = (400, 70))
+success_message2 = font.render(f'You have successfully guided Vireo', False, 'Green')
+success_message_rect2 = success_message2.get_rect(center = (400, 120))
+success_message3 = font.render(f'to the safety.', False, 'Green')
+success_message_rect3 = success_message3.get_rect(center = (400, 170))
+
 # Timer for "enemies"
 obstacle_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(obstacle_timer, 1000)
-
 while True:
     events = pygame.event.get()
     for event in events:
@@ -170,8 +177,13 @@ while True:
         
         # collision detection
         game_active = collision()
+        if score >= 50:
+            game_active = False
 
     else:
+        obstacle_group.empty()
+        player.empty()
+        player.add(Player())
         if score == 0:
             screen.fill('#20B2AA')
             pygame.draw.rect(screen, '#FFA07A', menu_message_rect.inflate(10,10))
@@ -179,6 +191,16 @@ while True:
             screen.blit(player_stand, player_stand_rect)
             pygame.draw.rect(screen, '#FFA07A', game_name_rect.inflate(10,10))
             screen.blit(game_name, game_name_rect)
+        elif score >= 50:
+            screen.blit(sky_surface, (0,0))
+            screen.blit(ground_surface, (0,300))
+            pygame.draw.rect(screen, 'Black', success_message_rect1.inflate(15,15))
+            screen.blit(success_message1, success_message_rect1)
+            pygame.draw.rect(screen, 'Black', success_message_rect2.inflate(15,15))
+            screen.blit(success_message2, success_message_rect2)
+            pygame.draw.rect(screen, 'Black', success_message_rect3.inflate(15,15))
+            screen.blit(success_message3, success_message_rect3)                        
+
         else:
             screen.fill('#CD5C5C')
             score_message = font.render(f'Vireo walked {score} metres', False, 'black')
@@ -188,6 +210,5 @@ while True:
             screen.blit(pygame.transform.flip(player_stand, 0, 1), player_stand_rect)
             pygame.draw.rect(screen, '#0ABAB5', unfortunate_message_rect.inflate(10,10))
             screen.blit(unfortunate_message, unfortunate_message_rect)
-        
     pygame.display.update()
     clock.tick(60)
